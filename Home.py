@@ -6,9 +6,9 @@ from streamlit_folium import st_folium
 
 APP_TITLE = 'Deforestation-free Soy'
 APP_SUB_TITLE = 'Report from 2020-2022 * Only soy properties considered'
-DATA_FILE_PATH = r'C:\Users\Vitor\Documents\dash_soja_brasil\data\relatorio_soja_2020_2024-02-09.csv'
-GEO_DATA = r'C:\Users\Vitor\Documents\dash_soja_brasil\data\BR_UF_2022.geojson'
-IMAGE_DATA = r'C:\Users\Vitor\Documents\dash_soja_brasil\data\color_ramp.jpg'
+DATA_FILE_PATH = '\data\relatorio_soja_2020_2024-02-09.csv'
+GEO_DATA = '\data\BR_UF_2022.geojson'
+IMAGE_DATA = '\dash_soja_brasil\data\color_ramp.jpg'
 
 def load_data(file_path):
     try:
@@ -39,7 +39,6 @@ def display_map(mdf, estado, year):
 
     choropleth.geojson.add_to(map)
 
-    #mdf = mdf.set_index('sigla_uf')
 
     for feature in choropleth.geojson.data['features']:
         state = feature['properties']['sigla_uf']
