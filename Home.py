@@ -6,9 +6,9 @@ from streamlit_folium import st_folium
 
 APP_TITLE = 'Deforestation-free Soy'
 APP_SUB_TITLE = 'Report from 2020-2022 * Only soy properties considered'
-DATA_FILE_PATH = '/data/relatorio_soja_2020_2024-02-09.csv'
-GEO_DATA = '/data/BR_UF_2022.geojson'
-IMAGE_DATA = '/dash_soja_brasil/data/color_ramp.jpg'
+DATA_FILE_PATH = 'data/relatorio_soja_2020_2024-02-09.csv'
+GEO_DATA = 'data/BR_UF_2022.geojson'
+IMAGE_DATA = 'dash_soja_brasil/data/color_ramp.jpg'
 
 def load_data(file_path):
     try:
@@ -91,7 +91,7 @@ def main():
     
     # Display the map with filtered data
     display_map(df_filtered, estados_selected, years_selected)
-    st.image(IMAGE_DATA,use_column_width=True,output_format='JPEG')
+    #st.image(IMAGE_DATA,use_column_width=True,output_format='JPEG')
     st.write(df_filtered)
 
     # Calculate and display metrics
