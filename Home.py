@@ -13,7 +13,7 @@ IMAGE_DATA = 'dash_soja_brasil/data/color_ramp.jpg'
 def load_data(file_path):
     try:
         df = pd.read_csv(file_path, sep=',', encoding='utf-8')
-        df[["soja_area_nao_desmat"]] = df[["soja_area_nao_desmat"]].apply(pd.to_numeric)
+        df[["soja_area_nao_desmat"]] = df[["soja_area_nao_desmat"]].apply(pd.to_numeric)*100
         return df
     except FileNotFoundError:
         st.error(f"File not found at: {file_path}")
