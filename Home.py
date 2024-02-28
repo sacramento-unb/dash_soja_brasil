@@ -6,14 +6,14 @@ from streamlit_folium import st_folium
 
 APP_TITLE = 'Deforestation-free Soy'
 APP_SUB_TITLE = 'Report from 2020-2022 * Only soy properties considered'
-DATA_FILE_PATH = 'data/relatorio_soja_2020_2024-02-09.csv'
+DATA_FILE_PATH = 'data/relatorio_soja_2024-02-27.csv'
 GEO_DATA = 'data/BR_UF_2022.geojson'
 IMAGE_DATA = 'dash_soja_brasil/data/color_ramp.jpg'
 
 def load_data(file_path):
     try:
         df = pd.read_csv(file_path, sep=',', encoding='utf-8')
-        df[["soja_area_nao_desmat"]] = df[["soja_area_nao_desmat"]].apply(pd.to_numeric)*100
+        df[["soja_area_nao_desmat"]] = df[["soja_area_nao_desmat"]].apply(pd.to_numeric)
         return df
     except FileNotFoundError:
         st.error(f"File not found at: {file_path}")
@@ -39,23 +39,23 @@ def display_map(mdf, estado, year):
 
     choropleth.geojson.add_to(map)
 
-
+    mdf = mdf.set_index(['soja_area_nao_desmat'])
     for feature in choropleth.geojson.data['features']:
         state = feature['properties']['sigla_uf']
 
-        formatted_number = '{:,.2f}'.format(mdf.loc[state][1] if state in mdf.index else 0)
+        formatted_number = '{:,.2f}'.format(mdf.loc[state][0] if state in mdf.index else 0)
         formatted_number = formatted_number.replace('.', '|').replace(',', '.').replace('|', ',')
         feature['properties']['soja_area_nao_desmat'] = 'Soy: ' + formatted_number + ' (ha)'
 
-        formatted_carbon = '{:,.2f}'.format(round(mdf.loc[state][2]) if state in mdf.index else 0)
+        formatted_carbon = '{:,.2f}'.format(round(mdf.loc[state][1]) if state in mdf.index else 0)
         formatted_carbon = formatted_carbon.replace('.', '|').replace(',', '.').replace('|', ',')
         feature['properties']['tco2eq'] = 'Carbon on soil: ' + formatted_carbon + ' (ton)'
 
-        formatted_lr = '{:,.2f}'.format(round(mdf.loc[state][3]) if state in mdf.index else 0)
+        formatted_lr = '{:,.2f}'.format(round(mdf.loc[state][2]) if state in mdf.index else 0)
         formatted_lr = formatted_lr.replace('.', '|').replace(',', '.').replace('|', ',')
         feature['properties']['lr_surplus'] = 'Legal reserve surplus: ' + formatted_lr + ' (ha)'
 
-        formatted_CARs = '{:,.0f}'.format(round(mdf.loc[state][4]) if state in mdf.index else 0)
+        formatted_CARs = '{:,.0f}'.format(round(mdf.loc[state][3]) if state in mdf.index else 0)
         formatted_CARs = formatted_CARs.replace('.', '|').replace(',', '.').replace('|', ',')
         feature['properties']['qtd_cars'] = 'Active CARs: ' + formatted_CARs
 
@@ -97,13 +97,15 @@ def main():
     # Calculate and display metrics
     if not df_filtered.empty:
         
-        total_soy = df_filtered['soja_area_nao_desmat'].sum()
+        total_soy = df_filtered['area_ha_soja_total'].sum()
+        deforestation_free_soy = df_filtered['soja_area_nao_desmat'].sum()
         total_carbon = df_filtered['tco2eq'].sum()
         total_lr_surplus = df_filtered['lr_surplus'].sum()
         total_cars = df_filtered['qtd_cars'].sum()
         st.sidebar.write("## Summary statistics")
 
-        st.sidebar.write("Soy", f"{total_soy:,.2f}{' (ha)'}".replace(',', '|').replace('.', ',').replace('|', '.'))
+        st.sidebar.write("Total Soy", f"{total_soy:,.2f}{' (ha)'}".replace(',', '|').replace('.', ',').replace('|', '.'))
+        st.sidebar.write("Deforestation-free Soy", f"{deforestation_free_soy:,.2f}{' (ha)'}".replace(',', '|').replace('.', ',').replace('|', '.'))
         st.sidebar.write("Carbon", f"{total_carbon:,.2f}{' ton'}".replace(',', '|').replace('.', ',').replace('|', '.'))
         st.sidebar.write("Legal reserve Surplus", f"{total_lr_surplus:,.2f}{' (ha)'}".replace(',', '|').replace('.', ',').replace('|', '.'))
         st.sidebar.write("Active CAR's", f"{total_cars:,.0f}".replace(',', '|').replace('.', ',').replace('|', '.'))
